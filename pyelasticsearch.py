@@ -370,7 +370,7 @@ class Bonsai(ElasticSearch):
     method signatures.
     """
 
-    def __init__(self, url, timeout=60):
+    def __init__(self, url, **kwargs):
         try:
             base_url, index = url.rsplit('/', 1)
             if not base_url and index:
@@ -378,9 +378,8 @@ class Bonsai(ElasticSearch):
         except ValueError:
             raise ValueError('Bonsai requires a URL including the '
                              'index name.  e.g. http://index.bonsai.io/NNNN')
-        self.url = base_url
-        self.index = index
-        self.timeout = timeout
+        super(Bonsai, self).__init__(base_url, **kwargs)
+        self._index = index
 
     ## REST API
 
@@ -389,28 +388,28 @@ class Bonsai(ElasticSearch):
         Index a typed JSON document into the index and make it searchable.
         """
         return super(Bonsai, self
-                ).index(doc, self.index, doc_type, id, force_insert)
+                ).index(doc, self._index, doc_type, id, force_insert)
 
     def delete(self, doc_type, id):
         """
         Delete a typed JSON document from the index based on its id.
         """
         return super(Bonsai, self
-                ).delete(doc, self.index, doc_type, id)
+                ).delete(doc, self._index, doc_type, id)
 
     def delete_by_query(self, doc_type, query):
         """
         Delete a typed JSON documents from a specific index based on query
         """
         return super(Bonsai, self
-                ).delete_by_query(doc, self.index, doc_type, query)
+                ).delete_by_query(doc, self._index, doc_type, query)
 
     def get(self, doc_type, id):
         """
         Get a typed JSON document from an index based on its id.
         """
         return super(Bonsai, self
-                ).get(self.index, doc_type, id)
+                ).get(self._index, doc_type, id)
 
     def search(self, query, body=None, doc_types=[], **query_params):
         """
@@ -421,14 +420,14 @@ class Bonsai(ElasticSearch):
         'body' argument.
         """
         return super(Bonsai, self
-                ).search(query, body, [self.index], doc_types, **query_params)
+                ).search(query, body, [self._index], doc_types, **query_params)
 
     def count(self, query, body=None, doc_types=[], **query_params):
         """
         Execute a query against the index and get hits count.
         """
         return super(Bonsai, self
-                ).count(query, body, [self.index], doc_types, **query_params)
+                ).count(query, body, [self._index], doc_types, **query_params)
 
     def put_mapping(self, doc_type, mapping):
         """
@@ -436,7 +435,7 @@ class Bonsai(ElasticSearch):
         the index.
         """
         return super(Bonsai, self
-                ).put_mapping(doc_type, self.index, mapping)
+                ).put_mapping(doc_type, self._index, mapping)
 
     def morelikethis(self, doc_type, id, fields, **query_params):
         """
@@ -444,7 +443,7 @@ class Bonsai(ElasticSearch):
         get back search hits.
         """
         return super(Bonsai, self
-            ).morelikethis(doc_type, self.index, id, fields, **query_params)
+            ).morelikethis(doc_type, self._index, id, fields, **query_params)
 
     ## Index Admin API
 
@@ -452,7 +451,7 @@ class Bonsai(ElasticSearch):
         """
         Retrieve the status of the index
         """
-        return super(Bonsai, self).status([self.index])
+        return super(Bonsai, self).status([self._index])
 
     def create_index(self, index=None, settings=None):
         raise ElasticSearchError('Bonsai does not support index creation.')
@@ -464,25 +463,25 @@ class Bonsai(ElasticSearch):
         """
         Flushes the index (clear memory)
         """
-        return super(Bonsai, self).flush([self.index], refresh)
+        return super(Bonsai, self).flush([self._index], refresh)
 
     def refresh(self):
         """
         Refresh the index
         """
-        return super(Bonsai, self).refresh([self.index])
+        return super(Bonsai, self).refresh([self._index])
 
     def gateway_snapshot(self):
         """
         Gateway snapshot the index
         """
-        return super(Bonsai, self).gateway_snapshot([self.index])
+        return super(Bonsai, self).gateway_snapshot([self._index])
 
     def optimize(self, **args):
         """
         Optimize the index
         """
-        return super(Bonsai, self).optimize([self.index], **args)
+        return super(Bonsai, self).optimize([self._index], **args)
 
 if __name__ == "__main__":
     import doctest
