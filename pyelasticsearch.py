@@ -298,6 +298,15 @@ class ElasticSearch(object):
         response = self._send_request('GET', path, querystring_args=query_params)
         return response
 
+    def analyze(self, text, index=None, **analyze_params):
+        """
+        Hit the analyze API endpoint to investigate how content is tokenized.
+        """
+        path = self._make_path([index, '_analyze'])
+        response = self._send_request('GET', path, body=text,
+                querystring_args=analyze_params)
+        return response
+
     ## Index Admin API
 
     def status(self, indexes=['_all']):
@@ -446,6 +455,13 @@ class Bonsai(ElasticSearch):
         """
         return super(Bonsai, self
             ).morelikethis(self._index, doc_type, id, fields, **query_params)
+
+    def analyze(self, text, **analyze_params):
+        """
+        Hit the analyze API endpoint to investigate how content is tokenized.
+        """
+        return super(Bonsai, self).analyze(text, index=self._index,
+                **analyze_params)
 
     ## Index Admin API
 
