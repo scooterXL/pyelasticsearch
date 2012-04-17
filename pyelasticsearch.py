@@ -445,7 +445,7 @@ class Bonsai(ElasticSearch):
         get back search hits.
         """
         return super(Bonsai, self
-            ).morelikethis(doc_type, self._index, id, fields, **query_params)
+            ).morelikethis(self._index, doc_type, id, fields, **query_params)
 
     ## Index Admin API
 
