@@ -142,9 +142,11 @@ class ElasticSearch(object):
     ElasticSearch connection object.
     """
 
-    def __init__(self, url, timeout=60):
+    def __init__(self, url, timeout=60, json_encoder=None, json_decoder=None):
         self.url = url
         self.timeout = timeout
+        self.json_encoder = json_encoder
+        self.json_decoder = json_decoder
 
         if self.url.endswith('/'):
             self.url = self.url[:-1]
@@ -202,13 +204,13 @@ class ElasticSearch(object):
         """
         Encodes body as json.
         """
-        return json.dumps(body)
+        return json.dumps(body, cls=self.json_encoder)
 
     def _prep_response(self, response):
         """
         Parses json to a native python object.
         """
-        return json.loads(response)
+        return json.loads(response, cls=self.json_decoder)
 
     def _query_call(self, query_type, query, body=None, indexes=['_all'], doc_types=[], **query_params):
         """
