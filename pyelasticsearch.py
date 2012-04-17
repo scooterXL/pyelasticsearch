@@ -294,7 +294,7 @@ class ElasticSearch(object):
         Execute a "more like this" search query against one or more fields and get back search hits.
         """
         path = self._make_path([index, doc_type, id, '_mlt'])
-        query_params['fields'] = ','.join(fields)
+        query_params['mlt_fields'] = ','.join(fields)
         response = self._send_request('GET', path, querystring_args=query_params)
         return response
 
