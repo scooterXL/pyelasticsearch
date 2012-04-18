@@ -127,11 +127,11 @@ class SearchTestCase(ElasticSearchTestCase):
         self.assertResultContains(result, {'_type': 'test-type', '_id': '1', '_source': {'name': 'Joe Tester'}, '_index': 'test-index'})
 
     def testGetCountBySearch(self):
-        result = self.conn.count("name:joe")
+        result = self.conn.count("name:joe", indexes=["test-index"])
         self.assertResultContains(result, {'count': 1})
 
     def testSearchByField(self):
-        result = self.conn.search("name:joe")
+        result = self.conn.search("name:joe", indexes=["test-index"])
         self.assertResultContains(result, {'hits': {'hits': [{'_score': 0.19178301, '_type': 'test-type', '_id': '1', '_source': {'name': 'Joe Tester'}, '_index': 'test-index'}], 'total': 1, 'max_score': 0.19178301}})
 
     def testMLT(self):
